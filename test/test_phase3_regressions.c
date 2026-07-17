@@ -100,7 +100,7 @@ void test_risk_default_strategy_coexist(void) {
     /* STRATEGY registration */
     char save_dir[4096];
     snprintf(save_dir, sizeof(save_dir), "%s/strategy", tmpdir);
-    mkdir(save_dir, 0755);
+    sv_mkdir(save_dir);
     create_fake_system_cnf(save_dir, "TEST-00001");
 
     sv_manifest_t *manifest = sv_manifest_create();
@@ -246,7 +246,7 @@ void test_risk_shape_override_mismatch(void) {
     /* Create a directory */
     char save_dir[4096];
     snprintf(save_dir, sizeof(save_dir), "%s/misshape", tmpdir);
-    mkdir(save_dir, 0755);
+    sv_mkdir(save_dir);
     {
         char file_path[4096];
         snprintf(file_path, sizeof(file_path), "%s/file.txt", save_dir);
@@ -302,7 +302,7 @@ void test_risk_update_strategy_registration(void) {
 
     char save_dir[4096];
     snprintf(save_dir, sizeof(save_dir), "%s/upd_strat", tmpdir);
-    mkdir(save_dir, 0755);
+    sv_mkdir(save_dir);
     create_fake_system_cnf(save_dir, "TEST-00002");
 
     sv_manifest_t *manifest = sv_manifest_create();
@@ -613,7 +613,7 @@ void test_coverage_manifest_file_to_registration(void) {
     /* Create SYSTEM.CNF in a save directory */
     char save_dir[4096];
     snprintf(save_dir, sizeof(save_dir), "%s/ps2_save", tmpdir);
-    mkdir(save_dir, 0755);
+    sv_mkdir(save_dir);
     create_fake_system_cnf(save_dir, "TEST-00003");
 
     /* Write manifest to file */
@@ -691,7 +691,7 @@ void test_coverage_no_fallback_chain_exists(void) {
     /* Create a save file with NO SYSTEM.CNF but valid checksum data */
     char save_dir[4096];
     snprintf(save_dir, sizeof(save_dir), "%s/no_cnf", tmpdir);
-    mkdir(save_dir, 0755);
+    sv_mkdir(save_dir);
     /* No SYSTEM.CNF file — serial extraction will fail */
 
     /* But create a data file with a recognizable checksum */
@@ -814,7 +814,7 @@ void test_coverage_save_path_template_resolves(void) {
     /* Create a SYSTEM.CNF so game_id resolves */
     char save_dir[4096];
     snprintf(save_dir, sizeof(save_dir), "%s/ps2_save", tmpdir);
-    mkdir(save_dir, 0755);
+    sv_mkdir(save_dir);
     create_fake_system_cnf(save_dir, "TEST-00004");
 
     sv_manifest_t *manifest = sv_manifest_create();
@@ -962,7 +962,7 @@ void test_coverage_template_metadata_roundtrip(void) {
 
     char save_dir[4096];
     snprintf(save_dir, sizeof(save_dir), "%s/rt_save", tmpdir);
-    mkdir(save_dir, 0755);
+    sv_mkdir(save_dir);
     create_fake_system_cnf(save_dir, "TEST-00005");
 
     sv_manifest_t *manifest = sv_manifest_create();

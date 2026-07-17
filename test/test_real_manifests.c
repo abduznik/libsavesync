@@ -49,7 +49,7 @@ void test_pcsx2_manifest(void) {
     /* Create a PS2 save directory with SYSTEM.CNF */
     char save_dir[4096];
     snprintf(save_dir, sizeof(save_dir), "%s/ps2_save", tmpdir);
-    mkdir(save_dir, 0755);
+    sv_mkdir(save_dir);
 
     /* SYSTEM.CNF with PCSX2-style BOOT2 line */
     char cnf_path[4096];
@@ -127,7 +127,7 @@ void test_ppsspp_manifest(void) {
     {
         char save_dir[4096];
         snprintf(save_dir, sizeof(save_dir), "%s/ULUS10509001", tmpdir);
-        mkdir(save_dir, 0755);
+        sv_mkdir(save_dir);
 
         sv_register_opts_t opts = { .live_path = save_dir, .shape = SV_SHAPE_DIRECTORY, .retention_count = 5 };
         sv_registration_t *reg = sv_register_with_manifest(&opts, manifest, &st);
@@ -148,7 +148,7 @@ void test_ppsspp_manifest(void) {
             snprintf(name, sizeof(name), "ULUS10509%s", suffixes[i]);
             char save_dir[4096];
             snprintf(save_dir, sizeof(save_dir), "%s/%s", tmpdir, name);
-            mkdir(save_dir, 0755);
+            sv_mkdir(save_dir);
 
             sv_register_opts_t opts = { .live_path = save_dir, .shape = SV_SHAPE_DIRECTORY, .retention_count = 5 };
             sv_registration_t *reg = sv_register_with_manifest(&opts, manifest, &st);
@@ -167,7 +167,7 @@ void test_ppsspp_manifest(void) {
     {
         char save_dir[4096];
         snprintf(save_dir, sizeof(save_dir), "%s/ULES01372001", tmpdir);
-        mkdir(save_dir, 0755);
+        sv_mkdir(save_dir);
 
         sv_register_opts_t opts = { .live_path = save_dir, .shape = SV_SHAPE_DIRECTORY, .retention_count = 5 };
         sv_registration_t *reg = sv_register_with_manifest(&opts, manifest, &st);
@@ -184,7 +184,7 @@ void test_ppsspp_manifest(void) {
     {
         char save_dir[4096];
         snprintf(save_dir, sizeof(save_dir), "%s/SHORT", tmpdir);
-        mkdir(save_dir, 0755);
+        sv_mkdir(save_dir);
 
         sv_register_opts_t opts = { .live_path = save_dir, .shape = SV_SHAPE_DIRECTORY, .retention_count = 5 };
         sv_registration_t *reg = sv_register_with_manifest(&opts, manifest, &st);
@@ -214,7 +214,7 @@ void test_ppsspp_manifest(void) {
     {
         char save_dir[4096];
         snprintf(save_dir, sizeof(save_dir), "%s/ULUS10509002", tmpdir);
-        mkdir(save_dir, 0755);
+        sv_mkdir(save_dir);
 
         char save_file[4096];
         snprintf(save_file, sizeof(save_file), "%s/ULUS10509002/ICON0.PNG", tmpdir);
@@ -498,12 +498,12 @@ void test_ryujinx_manifest(void) {
      * save/{userId}/{slotId}/Player.sav — create parents first */
     char parent[4096];
     snprintf(parent, sizeof(parent), "%s/save", tmpdir);
-    mkdir(parent, 0755);
+    sv_mkdir(parent);
     snprintf(parent, sizeof(parent), "%s/save/0000000000000001", tmpdir);
-    mkdir(parent, 0755);
+    sv_mkdir(parent);
     char save_dir[4096];
     snprintf(save_dir, sizeof(save_dir), "%s/save/0000000000000001/0", tmpdir);
-    mkdir(save_dir, 0755);
+    sv_mkdir(save_dir);
 
     char sav_path[4096];
     snprintf(sav_path, sizeof(sav_path), "%s/Player.sav", save_dir);
@@ -591,7 +591,7 @@ void test_rpcs3_manifest(void) {
     {
         char save_dir[4096];
         snprintf(save_dir, sizeof(save_dir), "%s/BLUS30443DEMONSS005", tmpdir);
-        mkdir(save_dir, 0755);
+        sv_mkdir(save_dir);
 
         sv_register_opts_t opts = { .live_path = save_dir, .shape = SV_SHAPE_DIRECTORY, .retention_count = 5 };
         sv_registration_t *reg = sv_register_with_manifest(&opts, manifest, &st);
@@ -612,7 +612,7 @@ void test_rpcs3_manifest(void) {
             snprintf(name, sizeof(name), "BLUS30826%s", suffixes[i]);
             char save_dir[4096];
             snprintf(save_dir, sizeof(save_dir), "%s/%s", tmpdir, name);
-            mkdir(save_dir, 0755);
+            sv_mkdir(save_dir);
 
             sv_register_opts_t opts = { .live_path = save_dir, .shape = SV_SHAPE_DIRECTORY, .retention_count = 5 };
             sv_registration_t *reg = sv_register_with_manifest(&opts, manifest, &st);
@@ -631,7 +631,7 @@ void test_rpcs3_manifest(void) {
     {
         char save_dir[4096];
         snprintf(save_dir, sizeof(save_dir), "%s/BLES00676-SAW", tmpdir);
-        mkdir(save_dir, 0755);
+        sv_mkdir(save_dir);
 
         sv_register_opts_t opts = { .live_path = save_dir, .shape = SV_SHAPE_DIRECTORY, .retention_count = 5 };
         sv_registration_t *reg = sv_register_with_manifest(&opts, manifest, &st);
@@ -648,7 +648,7 @@ void test_rpcs3_manifest(void) {
     {
         char save_dir[4096];
         snprintf(save_dir, sizeof(save_dir), "%s/SHORT", tmpdir);
-        mkdir(save_dir, 0755);
+        sv_mkdir(save_dir);
 
         sv_register_opts_t opts = { .live_path = save_dir, .shape = SV_SHAPE_DIRECTORY, .retention_count = 5 };
         sv_registration_t *reg = sv_register_with_manifest(&opts, manifest, &st);
@@ -678,7 +678,7 @@ void test_rpcs3_manifest(void) {
     {
         char save_dir[4096];
         snprintf(save_dir, sizeof(save_dir), "%s/BLUS30826F", tmpdir);
-        mkdir(save_dir, 0755);
+        sv_mkdir(save_dir);
 
         char save_file[4096];
         snprintf(save_file, sizeof(save_file), "%s/BLUS30826F/USERDATA", tmpdir);

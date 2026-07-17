@@ -11,6 +11,9 @@
 #include <io.h>
 #include <stdio.h>
 
+/* Portable mkdir: single-arg on Windows, two-arg on POSIX */
+static int sv_mkdir(const char *path) { return mkdir(path); }
+
 /*
  * Portable mkdtemp: creates a unique directory from a template.
  * Template must end with at least 6 X's (same as POSIX mkdtemp).
@@ -61,9 +64,13 @@ static char *sv_mkdtemp(char *template) {
 
 #else
 #include <stdlib.h>
+#include <sys/stat.h>
 
 /* On POSIX, mkdtemp is available directly */
 #define sv_mkdtemp mkdtemp
+
+/* Portable mkdir: two-arg on POSIX */
+static int sv_mkdir(const char *path) { return mkdir(path, 0755); }
 
 #endif
 

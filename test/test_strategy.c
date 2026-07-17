@@ -280,7 +280,7 @@ int main(void) {
     {
         char save_dir[4096];
         snprintf(save_dir, sizeof(save_dir), "%s/ps2_save", tmpdir);
-        mkdir(save_dir, 0755);
+        sv_mkdir(save_dir);
         create_fake_system_cnf(save_dir, "TEST-00001");
 
         manifest = sv_manifest_create();
@@ -318,7 +318,7 @@ int main(void) {
     {
         char save_dir[4096];
         snprintf(save_dir, sizeof(save_dir), "%s/short_cnf", tmpdir);
-        mkdir(save_dir, 0755);
+        sv_mkdir(save_dir);
         {
             char cnf_path[4096];
             snprintf(cnf_path, sizeof(cnf_path), "%s/SYSTEM.CNF", save_dir);
@@ -356,7 +356,7 @@ int main(void) {
     {
         char save_dir[4096];
         snprintf(save_dir, sizeof(save_dir), "%s/nomatch_cnf", tmpdir);
-        mkdir(save_dir, 0755);
+        sv_mkdir(save_dir);
         create_fake_system_cnf(save_dir, "WRONG_FORMAT");
 
         manifest = sv_manifest_create();
@@ -472,7 +472,7 @@ int main(void) {
     {
         char save_dir[4096];
         snprintf(save_dir, sizeof(save_dir), "%s/fallback_test", tmpdir);
-        mkdir(save_dir, 0755);
+        sv_mkdir(save_dir);
         /* No SYSTEM.CNF file — Tier 1 will fail */
         {
             char other_path[4096];

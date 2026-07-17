@@ -108,7 +108,7 @@ void test_rom_header_file_too_short(void) {
 
     char save_dir[4096];
     snprintf(save_dir, sizeof(save_dir), "%s/short_save", tmpdir);
-    mkdir(save_dir, 0755);
+    sv_mkdir(save_dir);
 
     char rom_path[4096];
     snprintf(rom_path, sizeof(rom_path), "%s/short.iso", tmpdir);
@@ -161,7 +161,7 @@ void test_rom_header_file_not_found(void) {
 
     char save_dir[4096];
     snprintf(save_dir, sizeof(save_dir), "%s/norom_save", tmpdir);
-    mkdir(save_dir, 0755);
+    sv_mkdir(save_dir);
 
     sv_manifest_t *manifest = sv_manifest_create();
     sv_manifest_set_platform(manifest, "gamecube");
@@ -208,7 +208,7 @@ void test_rom_header_hex_fallback(void) {
 
     char save_dir[4096];
     snprintf(save_dir, sizeof(save_dir), "%s/hex_save", tmpdir);
-    mkdir(save_dir, 0755);
+    sv_mkdir(save_dir);
 
     char rom_path[4096];
     snprintf(rom_path, sizeof(rom_path), "%s/binary.iso", tmpdir);
@@ -372,7 +372,7 @@ void test_no_regression_serial_cnf(void) {
 
     char save_dir[4096];
     snprintf(save_dir, sizeof(save_dir), "%s/ps2_save", tmpdir);
-    mkdir(save_dir, 0755);
+    sv_mkdir(save_dir);
 
     char cnf_path[4096];
     snprintf(cnf_path, sizeof(cnf_path), "%s/SYSTEM.CNF", save_dir);

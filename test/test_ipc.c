@@ -155,7 +155,7 @@ int main(void) {
     /* Create a live save directory with a test file */
     char live_path[4096];
     snprintf(live_path, sizeof(live_path), "%s/live_save", tmpdir);
-    mkdir(live_path, 0755);
+    sv_mkdir(live_path);
     char save_file[4096];
     snprintf(save_file, sizeof(save_file), "%s/data.bin", live_path);
     {
