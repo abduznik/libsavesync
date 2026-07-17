@@ -1,6 +1,7 @@
 #define _POSIX_C_SOURCE 200809L
 #define _DARWIN_C_SOURCE 1
 #include "savesync.h"
+#include "test_compat.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,7 +41,7 @@ void test_pcsx2_manifest(void) {
     printf("--- PCSX2 (PS2): SYSTEM.CNF serial ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_real_pcsx2_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -110,7 +111,7 @@ void test_ppsspp_manifest(void) {
     printf("--- PPSSPP (PSP): directory-name pattern identification ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_real_ppsspp_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -249,7 +250,7 @@ void test_duckstation_manifest(void) {
     printf("--- DuckStation (PS1): stem-based, no identity ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_real_duck_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -305,7 +306,7 @@ void test_dolphin_gc_manifest(void) {
     printf("--- Dolphin GC: ROM header identity ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_real_dolphin_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -369,7 +370,7 @@ void test_retroarch_snes_manifest(void) {
     printf("--- RetroArch SNES: stem-based, no identity ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_real_snes_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -424,7 +425,7 @@ void test_pcsx2_file_manifest(void) {
     printf("--- PCSX2 Legacy: shared memcard ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_real_pcsx2leg_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -488,7 +489,7 @@ void test_ryujinx_manifest(void) {
     printf("--- Ryujinx (Switch): text_pattern identity ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_real_ryujinx_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -574,7 +575,7 @@ void test_rpcs3_manifest(void) {
     printf("--- RPCS3 (PS3): directory-name pattern identification ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_real_rpcs3_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);

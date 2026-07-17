@@ -1,6 +1,7 @@
 #define _POSIX_C_SOURCE 200809L
 #define _DARWIN_C_SOURCE 1
 #include "savesync.h"
+#include "test_compat.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -71,7 +72,7 @@ void test_risk_default_strategy_coexist(void) {
     printf("--- Risk 1: DEFAULT + STRATEGY coexist ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_p3r1_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -170,7 +171,7 @@ void test_risk_identity_failure_dedup(void) {
     printf("--- Risk 2: identity failure + dedup ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_p3r2_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -237,7 +238,7 @@ void test_risk_shape_override_mismatch(void) {
     printf("--- Risk 3: shape override mismatch ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_p3r3_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -294,7 +295,7 @@ void test_risk_update_strategy_registration(void) {
     printf("--- Risk 4: update STRATEGY registration ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_p3r4_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -364,7 +365,7 @@ void test_risk_retention_preserves_game_id(void) {
     printf("--- Risk 5: retention preserves game_id ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_p3r5_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -426,7 +427,7 @@ void test_risk_metadata_roundtrip_game_id(void) {
     printf("--- Risk 6: metadata round-trip game_id ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_p3r6_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -483,7 +484,7 @@ void test_risk_hash_db_callback_not_found(void) {
     printf("--- Risk 7: hash-DB callback NOT_FOUND ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_p3r7_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -553,7 +554,7 @@ void test_coverage_hash_db_success_sets_game_id(void) {
     printf("--- Coverage: hash-DB success sets game_id ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_cov1_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -604,7 +605,7 @@ void test_coverage_manifest_file_to_registration(void) {
     printf("--- Coverage: manifest file → registration ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_cov2_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -682,7 +683,7 @@ void test_coverage_no_fallback_chain_exists(void) {
     printf("--- Coverage: NO fallback chain (tier isolation) ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_cov3_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -748,7 +749,7 @@ void test_coverage_checksum_identity_produces_game_id(void) {
     printf("--- Coverage: checksum identity → game_id content ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_cov4_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -805,7 +806,7 @@ void test_coverage_save_path_template_resolves(void) {
     printf("--- Coverage: save_path_template resolves ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_cov5_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -862,7 +863,7 @@ void test_coverage_save_path_template_unknown_game_id(void) {
     printf("--- Coverage: save_path_template unknown game_id ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_cov5b_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -912,7 +913,7 @@ void test_coverage_no_template_unchanged_behavior(void) {
     printf("--- Coverage: no template → unchanged behavior ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_cov5c_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -954,7 +955,7 @@ void test_coverage_template_metadata_roundtrip(void) {
     printf("--- Coverage: template metadata round-trip ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_cov5d_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -1012,7 +1013,7 @@ void test_collision_risk_game_id_only_template(void) {
     printf("--- Collision Risk: {game_id}-only template ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_coll_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);

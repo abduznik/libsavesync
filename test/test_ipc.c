@@ -9,6 +9,8 @@
 #include <sys/stat.h>
 #include <signal.h>
 
+#include "test_compat.h"
+
 static int tests_passed = 0;
 static int tests_failed = 0;
 static int test_count = 0;
@@ -121,7 +123,7 @@ static int json_has_error(const char *json) {
 
 int main(void) {
     char tmpdir[] = "/tmp/libsavesync_ipc_test_XXXXXX";
-    if (!mkdtemp(tmpdir)) {
+    if (!sv_mkdtemp(tmpdir)) {
         printf("FAIL: could not create temp dir\n");
         return 1;
     }

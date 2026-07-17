@@ -1,6 +1,7 @@
 #define _POSIX_C_SOURCE 200809L
 #define _DARWIN_C_SOURCE 1
 #include "savesync.h"
+#include "test_compat.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -65,7 +66,7 @@ void test_regression_serialize_pointer_indirection(void) {
     printf("--- Regression: serialize pointer indirection ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_regr1_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -155,7 +156,7 @@ void test_regression_opaque_registration_id_accessor(void) {
     printf("--- Regression: opaque registration ID accessor ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_regr2_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -219,7 +220,7 @@ void test_regression_pull_select_dangling_pointer(void) {
     printf("--- Regression: pull-select dangling pointer ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_regr3_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -300,7 +301,7 @@ void test_regression_newest_entry_tiebreak(void) {
     printf("--- Regression: newest-entry tiebreak ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_regr4_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);

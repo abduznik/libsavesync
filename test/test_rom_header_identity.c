@@ -1,6 +1,7 @@
 #define _POSIX_C_SOURCE 200809L
 #define _DARWIN_C_SOURCE 1
 #include "savesync.h"
+#include "test_compat.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,7 +42,7 @@ void test_rom_header_ascii_extraction(void) {
     printf("--- ROM Header: ASCII extraction ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_rh1_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -100,7 +101,7 @@ void test_rom_header_file_too_short(void) {
     printf("--- ROM Header: file too short ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_rh2_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -153,7 +154,7 @@ void test_rom_header_file_not_found(void) {
     printf("--- ROM Header: file not found ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_rh3_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -200,7 +201,7 @@ void test_rom_header_hex_fallback(void) {
     printf("--- ROM Header: hex encoding fallback ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_rh4_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -256,7 +257,7 @@ void test_rom_header_manifest_roundtrip(void) {
     printf("--- ROM Header: manifest round-trip ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_rh5_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -296,7 +297,7 @@ void test_dolphin_gc_integration(void) {
     printf("--- Dolphin GC: ROM header integration ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_rh6_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);
@@ -364,7 +365,7 @@ void test_no_regression_serial_cnf(void) {
     printf("--- No regression: serial_cnf ---\n");
 
     char tmpdir[] = "/tmp/libsavesync_rh7_XXXXXX";
-    mkdtemp(tmpdir);
+    sv_mkdtemp(tmpdir);
     char base_path[4096];
     snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
     sv_init(base_path);

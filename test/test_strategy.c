@@ -1,6 +1,7 @@
 #define _POSIX_C_SOURCE 200809L
 #define _DARWIN_C_SOURCE 1
 #include "savesync.h"
+#include "test_compat.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -164,7 +165,7 @@ static void create_manifest_file(const char *path, const char *content) {
  * =================================================================== */
 int main(void) {
     char tmpdir[] = "/tmp/libsavesync_strategy_test_XXXXXX";
-    if (!mkdtemp(tmpdir)) {
+    if (!sv_mkdtemp(tmpdir)) {
         printf("FAIL: could not create temp dir\n");
         return 1;
     }
