@@ -15,6 +15,7 @@
  *  Portability shims for Windows / MinGW
  * =================================================================== */
 #ifdef _WIN32
+#include <windows.h>
 #include <direct.h>
 static int sv_mkdir(const char *path) { return _mkdir(path); }
 
