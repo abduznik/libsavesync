@@ -36,8 +36,8 @@ static char *sv_mkdtemp(char *template) {
         strcpy(base, ".");
     }
 
-    /* Ensure base directory exists */
-    _mkdir(base);
+    /* Ensure base directory exists (MinGW mkdir takes 1 arg, no mode) */
+    mkdir(base);
 
     /* Try random suffixes until we get a unique name */
     for (int attempt = 0; attempt < 100; attempt++) {
@@ -51,7 +51,7 @@ static char *sv_mkdtemp(char *template) {
         memcpy(xs, suffix, 6);
 
         /* Try to create the directory */
-        if (_mkdir(template) == 0) {
+        if (mkdir(template) == 0) {
             return template;
         }
         /* EEXIST means collision — try again */
