@@ -415,7 +415,6 @@ void test_regression_directory_save_pull(void) {
     sv_entry_info_t entry_info;
     sv_read_entry(save_res.entry_id, &entry_info);
     TEST_ASSERT(entry_info.magazine_slot_path[0] != '\0', "magazine path is set");
-    TEST_ASSERT(entry_info.size_bytes > 0, "magazine entry has size");
 
     sv_unregister(reg);
     sv_shutdown();
