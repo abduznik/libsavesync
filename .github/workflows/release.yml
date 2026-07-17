@@ -65,7 +65,7 @@ jobs:
 
       - name: Package Linux artifacts
         run: |
-          mkdir -p staging/lib staging/bin include
+          mkdir -p staging/lib staging/bin staging/include
           cp build/libsavesync.a staging/lib/
           cp build/savesync-ipc staging/bin/
           cp include/savesync.h staging/include/
@@ -79,7 +79,7 @@ jobs:
 
       - name: Package macOS artifacts
         run: |
-          mkdir -p staging/lib staging/bin include
+          mkdir -p staging/lib staging/bin staging/include
           cp build/libsavesync.a staging/lib/
           cp build/savesync-ipc staging/bin/
           cp include/savesync.h staging/include/
@@ -93,7 +93,7 @@ jobs:
 
       - name: Package Windows artifacts
         run: |
-          mkdir -p staging/lib staging/bin include
+          mkdir -p staging/lib staging/bin staging/include
           cp build/libsavesync.a staging/lib/
           cp build/savesync-ipc.exe staging/bin/ || cp build/savesync-ipc staging/bin/
           cp include/savesync.h staging/include/
