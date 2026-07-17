@@ -29,6 +29,8 @@ TEST_REAL_SRC = $(TESTDIR)/test_real_manifests.c
 TEST_REAL_BIN = $(BUILDDIR)/test_real_manifests
 TEST_RH_SRC = $(TESTDIR)/test_rom_header_identity.c
 TEST_RH_BIN = $(BUILDDIR)/test_rom_header_identity
+TEST_IPC_SRC = $(TESTDIR)/test_ipc.c
+TEST_IPC_BIN = $(BUILDDIR)/test_ipc
 
 CFLAGS += -I$(INCDIR)
 
@@ -77,13 +79,17 @@ $(TEST_REAL_BIN): $(TEST_REAL_SRC) $(LIB_SRC) $(INCDIR)/savesync.h | $(BUILDDIR)
 $(TEST_RH_BIN): $(TEST_RH_SRC) $(LIB_SRC) $(INCDIR)/savesync.h | $(BUILDDIR)
 	$(CC) $(CFLAGS) $(DEBUGFLAGS) $(LIB_SRC) $(TEST_RH_SRC) -o $(TEST_RH_BIN)
 
-test: $(TEST_BASIC_BIN) $(TEST_STRATEGY_BIN) $(TEST_REGR_BIN) $(TEST_P3_REGR_BIN) $(TEST_REAL_BIN) $(TEST_RH_BIN)
+$(TEST_IPC_BIN): $(TEST_IPC_SRC) $(IPC_BIN) | $(BUILDDIR)
+	$(CC) $(CFLAGS) $(DEBUGFLAGS) $(TEST_IPC_SRC) -o $(TEST_IPC_BIN)
+
+test: $(TEST_BASIC_BIN) $(TEST_STRATEGY_BIN) $(TEST_REGR_BIN) $(TEST_P3_REGR_BIN) $(TEST_REAL_BIN) $(TEST_RH_BIN) $(TEST_IPC_BIN)
 	./$(TEST_BASIC_BIN)
 	./$(TEST_STRATEGY_BIN)
 	./$(TEST_REGR_BIN)
 	./$(TEST_P3_REGR_BIN)
 	./$(TEST_REAL_BIN)
 	./$(TEST_RH_BIN)
+	./$(TEST_IPC_BIN)
 
 clean:
 	rm -rf $(BUILDDIR)

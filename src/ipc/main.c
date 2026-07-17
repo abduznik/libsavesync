@@ -318,7 +318,7 @@ static int find_manifest(int id) {
 
 static int store_manifest(sv_manifest_t *m) {
     for (int i = 0; i < MAX_MANIFESTS; i++)
-        if (!manifests[i]) { manifests[i] = m; return i; }
+        if (!manifests[i]) { manifests[i] = m; if (i >= manifest_count) manifest_count = i + 1; return i; }
     return -1;
 }
 
@@ -330,7 +330,7 @@ static sv_registration_t *find_reg(const char *id_str) {
 
 static int store_reg(sv_registration_t *r) {
     for (int i = 0; i < MAX_REGS; i++)
-        if (!registrations[i]) { registrations[i] = r; return i; }
+        if (!registrations[i]) { registrations[i] = r; if (i >= reg_count) reg_count = i + 1; return i; }
     return -1;
 }
 
@@ -455,7 +455,6 @@ static int handle_pull(const char *id, const json_value *params) {
              result.did_pull ? "true" : "false",
              result.did_backup ? "true" : "false");
     sb_put(&s, buf);
-    sb_put(&s, "}");
     respond_finish(&s);
     return 0;
 }
@@ -479,7 +478,6 @@ static int handle_pull_select(const char *id, const json_value *params) {
              result.did_pull ? "true" : "false",
              result.did_backup ? "true" : "false");
     sb_put(&s, buf);
-    sb_put(&s, "}");
     respond_finish(&s);
     return 0;
 }
