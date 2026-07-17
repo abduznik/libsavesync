@@ -27,7 +27,7 @@ libsavesync is not an emulator, launcher, cloud service, or orchestration server
 |----|--------|-------|
 | Linux | Supported | Primary development platform |
 | macOS | Supported | Tested via CI |
-| Windows | Not yet supported | Known blocker: POSIX API dependencies (`/dev/urandom`, `rename` on some toolchains). The two initial compile errors (`mkdir`, `strndup`) are fixed; next CI run will reveal whether deeper issues remain. See [docs/ci-cd-release.md](docs/ci-cd-release.md) for details. |
+| Windows | Supported | Tested via CI (MinGW-w64). IPC test skipped on Windows (`fork`/`waitpid` unavailable). |
 
 ## Quick Start
 

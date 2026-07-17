@@ -28,21 +28,21 @@ libsavesync uses GitHub Actions for continuous integration and automated release
 
 **Trigger:** Push of a version tag matching `v*` (e.g., `v0.1.0`, `v1.2.3`).
 
-**Two-phase pipeline:**
+**Three-phase pipeline:**
 
 #### Phase 1: Test gate
 The full test suite runs on all three platforms. **No packaging or uploading happens if any platform's tests fail.** This is the release gate.
 
-#### Phase 2: Package & publish
-On success:
-1. Each platform's artifacts are rebuilt and packaged:
+#### Phase 2: Build & package
+Each platform is built and packaged on its native runner (not cross-compiled). Artifacts are uploaded per-platform:
    - `libsavesync-{version}-{platform}-{arch}.tar.gz`
    - Each archive contains:
      - `lib/libsavesync.a` — static library
-     - `bin/savesync-ipc` — standalone IPC binary
+     - `bin/savesync-ipc` — standalone IPC binary (`savesync-ipc.exe` on Windows)
      - `include/savesync.h` — public C header
-2. A GitHub Release is created with all archives attached
-3. Auto-generated release notes from commit history
+
+#### Phase 3: Publish
+All platform artifacts are downloaded and a GitHub Release is created with all archives attached and auto-generated release notes.
 
 ## Per-Platform Status
 
@@ -53,15 +53,9 @@ Expected: ✅ Full support. Builds and tests pass.
 Expected: ✅ Full support. Builds and tests pass. The codebase uses `_DARWIN_C_SOURCE` for compatibility.
 
 ### Windows (windows-latest)
-**Known risk: Likely to fail.** The codebase currently uses POSIX-specific APIs:
-- `/dev/urandom` for random ID generation
-- `mkdir()` without trailing slash handling
-- `rename()` for atomic file operations
-- `fork()` and `pipe()` in the IPC test (test-only, not the library itself)
+Expected: ✅ Full support. Builds and tests pass (MinGW-w64).
 
-These will cause compilation or test failures on Windows. If Windows CI fails, the specific failing API calls and error messages will be visible in the CI run. This is intentional — we do not claim Windows support until the POSIX dependencies are replaced with cross-platform equivalents.
-
-**Path to Windows support:** Replace POSIX calls with platform-abstracted equivalents (e.g., `CreateFile`/`MoveFileEx` for Windows, or a thin compat layer). The IPC binary itself (`src/ipc/main.c`) should be portable since it only uses stdio, but the underlying `savesync.c` library is the blocker.
+POSIX APIs (`/dev/urandom`, `mkdir`, `rename`, `mkdtemp`) have been replaced with cross-platform equivalents using `#ifdef _WIN32` guards and Win32 API calls where needed (`CreateFile`, `MoveFileEx`, `windows.h`). The IPC test (`fork`/`waitpid`) is skipped on Windows.
 
 ## Local Development
 
@@ -98,7 +92,7 @@ libsavesync-{version}-{platform}-{arch}/
 ├── lib/
 │   └── libsavesync.a
 ├── bin/
-│   └── savesync-ipc
+│   └── savesync-ipc          (savesync-ipc.exe on Windows)
 └── include/
     └── savesync.h
 ```

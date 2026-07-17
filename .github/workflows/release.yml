@@ -35,75 +35,72 @@ jobs:
         env:
           CC: ${{ matrix.cc }}
 
-  # Package and upload release assets (only after all tests pass)
-  release:
+  # Build and package on each platform natively
+  package:
     needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            cc: gcc
+            name: linux_x86_64
+            artifact: libsavesync-${{ github.ref_name }}-linux-x86_64
+          - os: macos-latest
+            cc: cc
+            name: macos_arm64
+            artifact: libsavesync-${{ github.ref_name }}-macos-arm64
+          - os: windows-latest
+            cc: gcc
+            name: windows_x86_64
+            artifact: libsavesync-${{ github.ref_name }}-windows-x86_64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build library and IPC binary
+        run: make static ipc
+        env:
+          CC: ${{ matrix.cc }}
+
+      - name: Package artifacts
+        shell: bash
+        run: |
+          mkdir -p staging/lib staging/bin staging/include
+          cp build/libsavesync.a staging/lib/
+          cp include/savesync.h staging/include/
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            cp build/savesync-ipc.exe staging/bin/ 2>/dev/null || cp build/savesync-ipc staging/bin/
+          else
+            cp build/savesync-ipc staging/bin/
+          fi
+          tar -czf ${{ matrix.artifact }}.tar.gz -C staging .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}
+          path: ${{ matrix.artifact }}.tar.gz
+          retention-days: 1
+
+  # Collect all platform artifacts and create the GitHub Release
+  release:
+    needs: package
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Extract version from tag
-        id: version
-        run: echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
-
-      - name: Set up artifact names
-        id: names
-        run: |
-          echo "linux_x86_64=libsavesync-${{ steps.version.outputs.tag }}-linux-x86_64" >> "$GITHUB_OUTPUT"
-          echo "macos_arm64=libsavesync-${{ steps.version.outputs.tag }}-macos-arm64" >> "$GITHUB_OUTPUT"
-          echo "windows_x86_64=libsavesync-${{ steps.version.outputs.tag }}-windows-x86_64" >> "$GITHUB_OUTPUT"
-
-      # Re-build artifacts per platform for packaging
-      - name: Build Linux artifacts
-        run: make static ipc
-        env:
-          CC: gcc
-          runner: ubuntu-latest
-
-      - name: Package Linux artifacts
-        run: |
-          mkdir -p staging/lib staging/bin staging/include
-          cp build/libsavesync.a staging/lib/
-          cp build/savesync-ipc staging/bin/
-          cp include/savesync.h staging/include/
-          tar -czf ${{ steps.names.outputs.linux_x86_64 }}.tar.gz -C staging .
-
-      - name: Build macOS artifacts
-        run: make static ipc
-        env:
-          CC: cc
-          runner: macos-latest
-
-      - name: Package macOS artifacts
-        run: |
-          mkdir -p staging/lib staging/bin staging/include
-          cp build/libsavesync.a staging/lib/
-          cp build/savesync-ipc staging/bin/
-          cp include/savesync.h staging/include/
-          tar -czf ${{ steps.names.outputs.macos_arm64 }}.tar.gz -C staging .
-
-      - name: Build Windows artifacts (MinGW)
-        run: make static ipc
-        env:
-          CC: gcc
-          runner: windows-latest
-
-      - name: Package Windows artifacts
-        run: |
-          mkdir -p staging/lib staging/bin staging/include
-          cp build/libsavesync.a staging/lib/
-          cp build/savesync-ipc.exe staging/bin/ || cp build/savesync-ipc staging/bin/
-          cp include/savesync.h staging/include/
-          cd staging && tar -czf ../${{ steps.names.outputs.windows_x86_64 }}.tar.gz .
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            ${{ steps.names.outputs.linux_x86_64 }}.tar.gz
-            ${{ steps.names.outputs.macos_arm64 }}.tar.gz
-            ${{ steps.names.outputs.windows_x86_64 }}.tar.gz
+          files: artifacts/*.tar.gz
           generate_release_notes: true
