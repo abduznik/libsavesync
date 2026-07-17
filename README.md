@@ -10,6 +10,8 @@ libsavesync is not an emulator, launcher, cloud service, or orchestration server
 
 ## Supported Platforms
 
+> **ROM identification:** [argosy-sigil](https://github.com/rommforge/argosy-sigil) extracts game IDs from ROM files (`.chd`, `.cso`, `.iso`, `.nsp`, `.3ds`, etc.) to power the save-matching pipeline. See [docs/sigil-integration.md](docs/sigil-integration.md).
+
 | Emulator | Platform | Identity Method | Validation Status |
 |----------|----------|-----------------|-------------------|
 | Dolphin (GameCube) | GC | `rom_header` — reads game ID from ROM header | Validated against real save data |
@@ -28,6 +30,48 @@ libsavesync is not an emulator, launcher, cloud service, or orchestration server
 | Linux | Supported | Primary development platform |
 | macOS | Supported | Tested via CI |
 | Windows | Supported | Tested via CI (MinGW-w64). IPC test skipped on Windows (`fork`/`waitpid` unavailable). |
+
+## ROM Identification with argosy-sigil
+
+libsavesync identifies saves *on disk*. [argosy-sigil](https://github.com/rommforge/argosy-sigil) identifies ROMs *before* — given a ROM file, it extracts the canonical game ID (e.g. `ULUS10167`) so you can find matching saves.
+
+**The pipeline:**
+
+```
+ROM (.chd/.cso/.iso/.nsp/.3ds) → sigil → save_id
+                                              │
+                                     scan SAVEDATA/ for prefix matches
+                                              │
+                                     libsavesync → register → snapshot
+```
+
+```c
+#include "sigil.h"
+#include "savesync.h"
+
+/* Extract save_id from any supported ROM */
+sigil_result sig;
+sigil_extract_from_path("/path/to/game.chd", SIGIL_PLATFORM_PSP, NULL, &sig);
+/* sig.save_id == "ULUS10167"  sig.experimental == 0 */
+
+/* Register matching PPSSPP save folders */
+sv_init("./db");
+sv_manifest_t *m = sv_manifest_create();
+sv_manifest_load("manifests/ppsspp.cfg", m);
+
+sv_register_opts_t opts = {
+    .live_path = "/path/to/SAVEDATA/ULUS10167Game00",
+    .game_id   = sig.save_id,
+    .shape     = SV_SHAPE_DIRECTORY,
+};
+sv_status_t st;
+sv_registration_t *reg = sv_register_with_manifest(&opts, m, &st);
+
+sv_save_result_t sr;
+sv_save(reg, NULL, &sr);  /* first versioned snapshot created */
+```
+
+See [docs/sigil-integration.md](docs/sigil-integration.md) for the full guide (CLI usage, C API reference, MSVC build notes, `.chd` caveats).
 
 ## Quick Start
 
@@ -136,6 +180,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for project conventions, test-first workf
 
 ## Links
 
+- [argosy-sigil Integration](docs/sigil-integration.md) — ROM-to-save pipeline: extract game IDs from ROMs, find matching saves
 - [IPC Protocol v1](docs/ipc-protocol-v1.md) — full NDJSON protocol specification
 - [CI/CD & Release Pipeline](docs/ci-cd-release.md) — multi-platform build and release automation
 - [Project Specification](save-sync-engine-spec.md) — design philosophy and layer architecture
