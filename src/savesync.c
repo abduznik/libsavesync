@@ -28,8 +28,15 @@ static char *sv_strndup(const char *s, size_t n) {
     return out;
 }
 #define strndup sv_strndup
+
+/* On Windows, rename() fails if dst exists — unlink first */
+static int sv_rename(const char *src, const char *dst) {
+    unlink(dst);
+    return rename(src, dst);
+}
 #else
 static int sv_mkdir(const char *path) { return mkdir(path, 0755); }
+#define sv_rename rename
 #endif
 
 /* ===================================================================
@@ -737,7 +744,7 @@ static bool metadata_flush(void) {
     if (fwrite(out, 1, pos, f) != pos) { fclose(f); unlink(tmp_path); free(out); return false; }
     fclose(f);
 
-    if (rename(tmp_path, path) != 0) { unlink(tmp_path); free(out); return false; }
+    if (sv_rename(tmp_path, path) != 0) { unlink(tmp_path); free(out); return false; }
 
     free(out);
     return true;
@@ -909,7 +916,7 @@ static bool atomic_copy_file(const char *src, const char *dst) {
 
     if (!ok) { unlink(tmp); return false; }
 
-    if (rename(tmp, dst) != 0) { unlink(tmp); return false; }
+    if (sv_rename(tmp, dst) != 0) { unlink(tmp); return false; }
     return true;
 }
 
@@ -949,7 +956,7 @@ static bool atomic_copy_dir(const char *src, const char *dst) {
         closedir(dir);
 
         /* Atomic rename */
-        if (rename(tmp_dst, dst) != 0) {
+        if (sv_rename(tmp_dst, dst) != 0) {
             /* Cleanup tmp */
             DIR *tdir = opendir(tmp_dst);
             if (tdir) {
@@ -1246,7 +1253,7 @@ sv_status_t sv_update_register(sv_registration_t *reg, const sv_update_opts_t *o
 
             /* Relocate */
             if (opts->relocate_mode == SV_RELOCATE_MOVE) {
-                if (rename(reg->live_path, opts->live_path) != 0) {
+                if (sv_rename(reg->live_path, opts->live_path) != 0) {
                     /* Fall back to copy + delete */
                     if (!copy_to_magazine(reg->live_path, opts->live_path, reg->shape))
                         return SV_ERR_IO;
