@@ -312,6 +312,12 @@ static bool ensure_dirs_for_path(const char *path) {
     tmp[sizeof(tmp) - 1] = '\0';
     for (char *p = tmp + 1; *p; p++) {
         if (*p == '/') {
+#ifdef _WIN32
+            /* Skip drive root (e.g. "C:") — stat/mkdir on it fails on Windows */
+            if (p == tmp + 2 && tmp[1] == ':') {
+                *p = '/'; continue;
+            }
+#endif
             *p = '\0';
             struct stat st;
             if (stat(tmp, &st) != 0) {
@@ -1095,11 +1101,14 @@ static bool run_retention(sv_registration_t *reg, sv_id_t *evicted_ids, size_t *
             struct stat st;
             if (stat(ent->magazine_slot_path, &st) == 0) {
                 if (S_ISDIR(st.st_mode)) {
-                    /* Recursive remove */
+#ifdef _WIN32
+                    sv_rmdir_recursive(ent->magazine_slot_path);
+#else
                     char cmd[4096];
                     snprintf(cmd, sizeof(cmd), "rm -rf \"%s\"", ent->magazine_slot_path);
                     system(cmd);
                     rmdir(ent->magazine_slot_path);
+#endif
                 } else {
                     unlink(ent->magazine_slot_path);
                 }
