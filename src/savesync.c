@@ -29,9 +29,38 @@ static char *sv_strndup(const char *s, size_t n) {
 }
 #define strndup sv_strndup
 
-/* On Windows, rename() fails if dst exists — unlink first */
+/* Recursively remove a directory (needed for Windows rename-over-dir) */
+static void sv_rmdir_recursive(const char *path) {
+    char pattern[4096];
+    WIN32_FIND_DATAA fd;
+    snprintf(pattern, sizeof(pattern), "%s/*", path);
+    HANDLE h = FindFirstFileA(pattern, &fd);
+    if (h != INVALID_HANDLE_VALUE) {
+        do {
+            if (strcmp(fd.cFileName, ".") == 0 || strcmp(fd.cFileName, "..") == 0) continue;
+            char child[4096];
+            snprintf(child, sizeof(child), "%s/%s", path, fd.cFileName);
+            if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+                sv_rmdir_recursive(child);
+            } else {
+                unlink(child);
+            }
+        } while (FindNextFileA(h, &fd));
+        FindClose(h);
+    }
+    rmdir(path);
+}
+
+/* On Windows, rename() fails if dst exists — remove first */
 static int sv_rename(const char *src, const char *dst) {
-    unlink(dst);
+    struct stat st;
+    if (stat(dst, &st) == 0) {
+        if (S_ISDIR(st.st_mode)) {
+            sv_rmdir_recursive(dst);
+        } else {
+            unlink(dst);
+        }
+    }
     return rename(src, dst);
 }
 #else

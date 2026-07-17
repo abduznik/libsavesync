@@ -32,6 +32,12 @@ static void write_test_file(const char *path, const char *content) {
     if (f) { fwrite(content, 1, strlen(content), f); fclose(f); }
 }
 
+static void write_test_file_with_path(const char *dir, const char *name, const char *content) {
+    char path[4096];
+    snprintf(path, sizeof(path), "%s/%s", dir, name);
+    write_test_file(path, content);
+}
+
 static bool file_contents_equal(const char *path, const char *expected) {
     FILE *f = fopen(path, "rb");
     if (!f) return false;
@@ -368,6 +374,59 @@ void test_regression_newest_entry_tiebreak(void) {
 
 /* ===================================================================
  *  Main
+ * ===================================================================
+ *  Regression: directory save exercises atomic_copy_dir + rename
+ *
+ *  On Windows, rename() fails when the destination exists. atomic_copy_dir
+ *  creates dst via ensure_dir(), copies into dst.sync_cp_tmp, then renames.
+ *  The rename must handle dst being a directory (rmdir, not unlink).
+ * =================================================================== */
+void test_regression_directory_save_pull(void) {
+    printf("--- Regression: directory save atomic rename ---\n");
+
+    char tmpdir[] = "/tmp/libsavesync_regr5_XXXXXX";
+    sv_mkdtemp(tmpdir);
+    char base_path[4096];
+    snprintf(base_path, sizeof(base_path), "%s/data", tmpdir);
+    sv_init(base_path);
+
+    /* Create a directory save with a file inside */
+    char save_dir[4096];
+    snprintf(save_dir, sizeof(save_dir), "%s/gamedir", tmpdir);
+    sv_mkdir(save_dir);
+    write_test_file_with_path(save_dir, "slot1.dat", "SAVE_V1");
+
+    sv_register_opts_t reg_opts = {
+        .live_path = save_dir,
+        .shape = SV_SHAPE_DIRECTORY,
+        .retention_count = 5,
+    };
+    sv_status_t st;
+    sv_registration_t *reg = sv_register(&reg_opts, &st);
+    TEST_ASSERT(reg != NULL, "directory register succeeds");
+
+    /* Save — exercises atomic_copy_dir → sv_rename */
+    sv_save_result_t save_res;
+    st = sv_save(reg, NULL, &save_res);
+    TEST_ASSERT(st == SV_OK, "directory save succeeds");
+    TEST_ASSERT(save_res.entry_created, "directory entry created");
+
+    /* Verify the magazine entry is a directory */
+    sv_entry_info_t entry_info;
+    sv_read_entry(save_res.entry_id, &entry_info);
+    TEST_ASSERT(entry_info.magazine_slot_path[0] != '\0', "magazine path is set");
+    TEST_ASSERT(entry_info.size_bytes > 0, "magazine entry has size");
+
+    sv_unregister(reg);
+    sv_shutdown();
+
+    char cmd[4096];
+    snprintf(cmd, sizeof(cmd), "rm -rf \"%s\"", tmpdir);
+    system(cmd);
+}
+
+/* ===================================================================
+ *  Main
  * =================================================================== */
 int main(void) {
     printf("\n=== libsavesync Regression Test Suite ===\n\n");
@@ -376,6 +435,7 @@ int main(void) {
     test_regression_opaque_registration_id_accessor();
     test_regression_pull_select_dangling_pointer();
     test_regression_newest_entry_tiebreak();
+    test_regression_directory_save_pull();
 
     printf("\n=== Results: %d passed, %d failed out of %d ===\n\n",
            tests_passed, tests_failed, test_count);
