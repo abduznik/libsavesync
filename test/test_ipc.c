@@ -2,6 +2,17 @@
 #define _DARWIN_C_SOURCE 1
 
 #include <stdio.h>
+
+#ifdef _WIN32
+/* IPC test requires fork()/waitpid() — not available on Windows.
+ * Skip gracefully so the test suite doesn't fail. */
+int main(void) {
+    printf("\n=== libsavesync IPC Integration Test Suite ===\n\n");
+    printf("  SKIPPED: fork/waitpid not available on Windows\n");
+    printf("\n=== Results: 0 passed, 0 failed out of 0 (skipped) ===\n\n");
+    return 0;
+}
+#else
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -294,3 +305,4 @@ int main(void) {
 
     return tests_failed > 0 ? 1 : 0;
 }
+#endif /* !_WIN32 */
