@@ -14,17 +14,20 @@ Compiler: `gcc` by default (override with `CC=clang`). Standard: `-std=gnu99`.
 ## Tests
 
 ```sh
-make test       # builds and runs all four test suites
+make test       # builds and runs all seven test suites
 ```
 
-Current test suites (169 tests total):
+Current test suites (360 tests total):
 
 | Suite | File | Covers | Count |
 |-------|------|--------|-------|
 | Basic | `test/test_basic.c` | DEFAULT mode: register, save, dedup, pull, retention, orphaning | 53 |
 | Strategy | `test/test_strategy.c` | STRATEGY mode: manifest lifecycle, identity resolution (Tier 1/2/3), fallback chain, integration | 48 |
 | Regressions | `test/test_regressions.c` | Historical bug regressions (serialize pointer, opaque accessor, dangling pointer, tiebreak) | 34 |
-| Phase 3 Regressions | `test/test_phase3_regressions.c` | Phase 3 risk surfaces (coexistence, dedup after identity failure, shape mismatch, retention + game_id, metadata round-trip, hash-DB callback) | 34 |
+| Phase 3 Regressions | `test/test_phase3_regressions.c` | Phase 3 risk surfaces (coexistence, dedup after identity failure, shape mismatch, retention + game_id, metadata round-trip, hash-DB callback) | 72 |
+| Real Manifests | `test/test_real_manifests.c` | Integration against 8 platform manifests | 96 |
+| ROM Header Identity | `test/test_rom_header_identity.c` | SV_IDENTITY_ROM_HEADER: extraction, fallback, round-trip, integration | 22 |
+| IPC Integration | `test/test_ipc.c` | IPC binary: init, manifest_load, register, save, pull, list, errors, shutdown | 35 |
 
 ### Where to add new tests
 
