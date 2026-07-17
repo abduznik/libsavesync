@@ -12,6 +12,27 @@
 #include <unistd.h>
 
 /* ===================================================================
+ *  Portability shims for Windows / MinGW
+ * =================================================================== */
+#ifdef _WIN32
+#include <direct.h>
+static int sv_mkdir(const char *path) { return _mkdir(path); }
+
+static char *sv_strndup(const char *s, size_t n) {
+    size_t len = strlen(s);
+    if (len > n) len = n;
+    char *out = (char *)malloc(len + 1);
+    if (!out) return NULL;
+    memcpy(out, s, len);
+    out[len] = '\0';
+    return out;
+}
+#define strndup sv_strndup
+#else
+static int sv_mkdir(const char *path) { return mkdir(path, 0755); }
+#endif
+
+/* ===================================================================
  *  SHA1 Implementation (public domain)
  * =================================================================== */
 typedef struct {
@@ -241,7 +262,7 @@ static bool ensure_dir(const char *path) {
         errno = ENOTDIR;
         return false;
     }
-    if (mkdir(path, 0755) == 0) return true;
+    if (sv_mkdir(path) == 0) return true;
     if (errno == EEXIST) {
         if (stat(path, &st) == 0 && S_ISDIR(st.st_mode)) return true;
     }
@@ -257,7 +278,7 @@ static bool ensure_dirs_for_path(const char *path) {
             *p = '\0';
             struct stat st;
             if (stat(tmp, &st) != 0) {
-                if (mkdir(tmp, 0755) != 0 && errno != EEXIST) return false;
+                if (sv_mkdir(tmp) != 0 && errno != EEXIST) return false;
             }
             *p = '/';
         }
