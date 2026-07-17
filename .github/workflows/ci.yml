@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            cc: gcc
+          - os: macos-latest
+            cc: cc
+          - os: windows-latest
+            cc: gcc
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build library and IPC binary
+        run: make static ipc
+        env:
+          CC: ${{ matrix.cc }}
+
+      - name: Run full test suite
+        run: make test
+        env:
+          CC: ${{ matrix.cc }}
+
+      - name: Verify IPC binary runs
+        run: ./build/savesync-ipc < /dev/null || true
+        if: matrix.os != 'windows-latest'

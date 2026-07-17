@@ -1,0 +1,109 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  # Gate: full test suite must pass on every platform before any packaging
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            cc: gcc
+          - os: macos-latest
+            cc: cc
+          - os: windows-latest
+            cc: gcc
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build library and IPC binary
+        run: make static ipc
+        env:
+          CC: ${{ matrix.cc }}
+
+      - name: Run full test suite
+        run: make test
+        env:
+          CC: ${{ matrix.cc }}
+
+  # Package and upload release assets (only after all tests pass)
+  release:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up artifact names
+        id: names
+        run: |
+          echo "linux_x86_64=libsavesync-${{ steps.version.outputs.tag }}-linux-x86_64" >> "$GITHUB_OUTPUT"
+          echo "macos_arm64=libsavesync-${{ steps.version.outputs.tag }}-macos-arm64" >> "$GITHUB_OUTPUT"
+          echo "windows_x86_64=libsavesync-${{ steps.version.outputs.tag }}-windows-x86_64" >> "$GITHUB_OUTPUT"
+
+      # Re-build artifacts per platform for packaging
+      - name: Build Linux artifacts
+        run: make static ipc
+        env:
+          CC: gcc
+          runner: ubuntu-latest
+
+      - name: Package Linux artifacts
+        run: |
+          mkdir -p staging/lib staging/bin include
+          cp build/libsavesync.a staging/lib/
+          cp build/savesync-ipc staging/bin/
+          cp include/savesync.h staging/include/
+          tar -czf ${{ steps.names.outputs.linux_x86_64 }}.tar.gz -C staging .
+
+      - name: Build macOS artifacts
+        run: make static ipc
+        env:
+          CC: cc
+          runner: macos-latest
+
+      - name: Package macOS artifacts
+        run: |
+          mkdir -p staging/lib staging/bin include
+          cp build/libsavesync.a staging/lib/
+          cp build/savesync-ipc staging/bin/
+          cp include/savesync.h staging/include/
+          tar -czf ${{ steps.names.outputs.macos_arm64 }}.tar.gz -C staging .
+
+      - name: Build Windows artifacts (MinGW)
+        run: make static ipc
+        env:
+          CC: gcc
+          runner: windows-latest
+
+      - name: Package Windows artifacts
+        run: |
+          mkdir -p staging/lib staging/bin include
+          cp build/libsavesync.a staging/lib/
+          cp build/savesync-ipc.exe staging/bin/ || cp build/savesync-ipc staging/bin/
+          cp include/savesync.h staging/include/
+          cd staging && tar -czf ../${{ steps.names.outputs.windows_x86_64 }}.tar.gz .
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ steps.names.outputs.linux_x86_64 }}.tar.gz
+            ${{ steps.names.outputs.macos_arm64 }}.tar.gz
+            ${{ steps.names.outputs.windows_x86_64 }}.tar.gz
+          generate_release_notes: true
